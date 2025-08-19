@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import { connectPostgres } from './postgres';
-import { Link, UID, User } from '../abstracts/types';
+import { Link, User } from '../abstracts/types';
 import { LinkRepository, UserRepository } from '../implementations/cruds';
 import { hash } from '../implementations/generators';
 
@@ -32,12 +32,11 @@ export function initEnterEntrypoints(fastify: FastifyInstance): void {
       };
       try {
         const registeredUser = await userRepository.create(newUser);
-        reply.setCookie('login', registeredUser.item.login, {
-          // httpOnly: true,
-          // signed: true,
-          sameSite: "none",
-          secure: true,
-        });
+        // reply.setCookie('login', registeredUser.item.login, {
+        //   // httpOnly: true,
+        //   // signed: true,
+        //   sameSite: "none",
+        // });
         reply.code(201).send(registeredUser);
       } catch {
         reply.code(403).send({
@@ -64,12 +63,12 @@ export function initEnterEntrypoints(fastify: FastifyInstance): void {
       try {
         const result = await userRepository.check(newUser);
         fastify.log.info(`User ${result.user.item.login} logged in successfully.`);
-        reply.setCookie('login', result.user.item.login, {
-          // httpOnly: true,
-          // signed: true,
-          sameSite: "none",
-          secure: true,
-        });
+        // reply.setCookie('login', result.user.item.login, {
+        //   // httpOnly: true,
+        //   // signed: true,
+        //   sameSite: "none",
+        //   secure: true,
+        // });
         reply.code(200).send(result);
       } catch {
         reply.code(403).send({
@@ -92,13 +91,13 @@ function initLinkEntrypoints(fastify: FastifyInstance): void {
       reply
     ) {
       const login = request.params.login;
-      const userId = request.cookies.login;
-      if (!userId || userId !== login) {
-        reply.code(401).send({ error: 'Unauthorized' });
-        return;
-      }
+      // const userId = request.cookies.login;
+      // if (!userId || userId !== login) {
+      //   reply.code(401).send({ error: 'Unauthorized' });
+      //   return;
+      // }
       try {
-        const readLinks = await linkRepository.readAll(userId);
+        const readLinks = await linkRepository.readAll(login);
         reply.code(200).send(readLinks);
       } catch (error) {
         reply.code(500).send({ error: 'Failed to retrieve links' });
@@ -116,13 +115,13 @@ function initLinkEntrypoints(fastify: FastifyInstance): void {
       reply
     ) {
       const id = request.params.id;
-      const userId = request.cookies.login;
+      // const userId = request.cookies.login;
       try {
         const link = await linkRepository.read(id);
-        if (!link || link.item.owner !== userId) {
-          reply.code(401).send({ error: 'Unauthorized' });
-          return;
-        }
+        // if (!link || link.item.owner !== userId) {
+        //   reply.code(401).send({ error: 'Unauthorized' });
+        //   return;
+        // }
         reply.code(200).send(link);
       } catch (error) {
         reply.code(500).send({ error: 'Failed to retrieve link' });
@@ -140,11 +139,11 @@ function initLinkEntrypoints(fastify: FastifyInstance): void {
       reply
     ) {
       const link: Link = request.body;
-      const userId = request.cookies.login;
-      if (!userId || !link.owner || link.owner !== userId) {
-        reply.code(401).send({ error: 'Unauthorized' });
-        return;
-      }
+      // const userId = request.cookies.login;
+      // if (!userId || !link.owner || link.owner !== userId) {
+      //   reply.code(401).send({ error: 'Unauthorized' });
+      //   return;
+      // }
 
       try {
         if (link.type === 'short') {
@@ -173,15 +172,15 @@ function initLinkEntrypoints(fastify: FastifyInstance): void {
     ) {
       const { id } = request.params;
       const item = request.body;
-      const userId = request.cookies.login;
+      // const userId = request.cookies.login;
 
       try {
-        const link = await linkRepository.read(id);
-        fastify.log.info(`User ID from cookie: ${userId}, Link owner: ${link?.item.owner}`);
-        if (!link || link.item.owner !== userId) {
-          reply.code(401).send({ error: 'Unauthorized' });
-          return;
-        }
+        // const link = await linkRepository.read(id);
+        // fastify.log.info(`User ID from cookie: ${userId}, Link owner: ${link?.item.owner}`);
+        // if (!link || link.item.owner !== userId) {
+        //   reply.code(401).send({ error: 'Unauthorized' });
+        //   return;
+        // }
         if (item.type === 'short') {
           item.short_id = await hash(item.full_link);
         }
@@ -204,14 +203,14 @@ function initLinkEntrypoints(fastify: FastifyInstance): void {
       reply
     ) {
       const { id } = request.body;
-      const login = request.cookies.login;
+      // const login = request.cookies.login;
 
       try {
         const link = await linkRepository.read(id);
-        if (!link || link.item.owner !== login) {
-          reply.code(401).send({ error: 'Unauthorized' });
-          return;
-        }
+        // if (!link || link.item.owner !== login) {
+        //   reply.code(401).send({ error: 'Unauthorized' });
+        //   return;
+        // }
         await linkRepository.delete(id);
         reply.code(204).send();
       } catch (error) {
@@ -236,10 +235,10 @@ export function initRedirectEntrypoints(fastify: FastifyInstance): void {
       try {
         const link = await linkRepository.check(tempLink);
         fastify.log.info(`im here`);
-        if (!link) {
-          reply.code(404).send({ error: 'Link not found' });
-          return;
-        }
+        // if (!link) {
+        //   reply.code(404).send({ error: 'Link not found' });
+        //   return;
+        // }
         reply.redirect(link.item.full_link);
       } catch (error) {
         reply.code(500).send({ error: 'Failed to redirect' });
@@ -261,10 +260,10 @@ export function initRedirectEntrypoints(fastify: FastifyInstance): void {
       const tempLink = { short_id: shortId, type: "named", owner: owner } as Link;
       try {
         const link = await linkRepository.check(tempLink);
-        if (!link) {
-          reply.code(404).send({ error: 'Link not found' });
-          return;
-        }
+        // if (!link) {
+        //   reply.code(404).send({ error: 'Link not found' });
+        //   return;
+        // }
         reply.redirect(link.item.full_link);
       } catch (error) {
         reply.code(500).send({ error: 'Failed to redirect' });

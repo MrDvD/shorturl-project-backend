@@ -14,7 +14,8 @@
     "@fastify/cors": "^11.1.0",
     "crypto-hash": "^3.1.0",
     "fastify": "^5.5.0",
-    "postgres": "^3.4.7"
+    "postgres": "^3.4.7",
+    "vite-plugin-fs": "^1.1.0"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",

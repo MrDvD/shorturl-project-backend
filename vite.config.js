@@ -1,6 +1,7 @@
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
+import fs from 'vite-plugin-fs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -9,6 +10,7 @@ export default defineConfig(({ mode }) => {
 
     return {
       root: resolve(__dirname, 'src'),
+      plugins: [fs()],
       build: {
         lib: {
           entry: resolve(__dirname, 'src/main/fastify.ts'),
@@ -20,7 +22,7 @@ export default defineConfig(({ mode }) => {
         outDir: resolve(__dirname, 'dist'),
         rollupOptions: {
           external: [
-            'path', 'url',
+            'path', 'url', 'fs',
             ...Object.keys(require('./package.json').dependencies || {})
           ],
         },
