@@ -35,7 +35,8 @@ export function initEnterEntrypoints(fastify: FastifyInstance): void {
         reply.setCookie('login', registeredUser.item.login, {
           // httpOnly: true,
           // signed: true,
-          sameSite: false,
+          sameSite: "none",
+          secure: true,
         });
         reply.code(201).send(registeredUser);
       } catch {
@@ -66,7 +67,8 @@ export function initEnterEntrypoints(fastify: FastifyInstance): void {
         reply.setCookie('login', result.user.item.login, {
           // httpOnly: true,
           // signed: true,
-          sameSite: false,
+          sameSite: "none",
+          secure: true,
         });
         reply.code(200).send(result);
       } catch {
