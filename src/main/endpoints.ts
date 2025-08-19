@@ -16,7 +16,7 @@ export function initEndpoints(fastify: FastifyInstance) {
 
 export function initEnterEntrypoints(fastify: FastifyInstance): void {
   fastify.route({
-    method: 'POST',
+    method: 'GET',
     url: '/register',
     handler: async function (
       request: FastifyRequest<{
@@ -46,7 +46,7 @@ export function initEnterEntrypoints(fastify: FastifyInstance): void {
   });
 
   fastify.route({
-    method: 'POST',
+    method: 'GET',
     url: '/login',
     handler: async function (
       request: FastifyRequest<{
@@ -127,7 +127,7 @@ function initLinkEntrypoints(fastify: FastifyInstance): void {
   });
 
   fastify.route({
-    method: 'POST',
+    method: 'GET',
     url: '/v1/generate-url',
     handler: async function (
       request: FastifyRequest<{
@@ -158,7 +158,7 @@ function initLinkEntrypoints(fastify: FastifyInstance): void {
   });
 
   fastify.route({
-    method: 'PUT',
+    method: 'GET',
     url: '/v1/link/:id/update',
     handler: async function (
       request: FastifyRequest<{
@@ -191,7 +191,7 @@ function initLinkEntrypoints(fastify: FastifyInstance): void {
   });
 
   fastify.route({
-    method: 'DELETE',
+    method: 'GET',
     url: '/v1/remove-link',
     handler: async function (
       request: FastifyRequest<{
