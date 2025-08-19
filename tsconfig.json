@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "module": "es2022",
+    "target": "es2022",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "esModuleInterop": true,
+    "preserveConstEnums": true,
+    "moduleResolution": "bundler",
+    "outDir": "target",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+  },
+  "include": ["src/**/*.ts"],
+}

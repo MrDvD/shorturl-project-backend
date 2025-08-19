@@ -1,0 +1,36 @@
+services:
+  database:
+    image: "postgres:latest"
+    environment:
+      - POSTGRES_HOST
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+    volumes:
+      - ./resources/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./postgresql:/var/lib/postgresql/data
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  web:
+    build: .
+    image: t-news-web:latest
+    environment:
+      - POSTGRES_HOST
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - APP_SECRET
+      - APP_PORT
+    networks:
+      - backend
+    ports:
+      - "${APP_PORT}:8080"
+    depends_on:
+      database:
+        condition: service_healthy
+
+networks:
+  backend: {}
