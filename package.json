@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.3.0",
+    "@vkontakte/vk-tunnel": "^0.2.7",
     "typescript": "^5.9.2",
     "vite": "^7.1.2"
   }

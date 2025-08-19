@@ -81,52 +81,38 @@ export function initEnterEntrypoints(fastify: FastifyInstance): void {
 
 
 function initLinkEntrypoints(fastify: FastifyInstance): void {
-  fastify.route({
-    method: 'GET',
-    url: '/v1/:login/links',
-    handler: async function (
-      request: FastifyRequest<{
-        Params: { login: string };
-      }>,
-      reply
-    ) {
-      const login = request.params.login;
-      // const userId = request.cookies.login;
-      // if (!userId || userId !== login) {
+  fastify.get<{
+    Params: { login: string };
+  }>('/v1/:login/links', async function (request, reply) {
+    const login = request.params.login;
+    // const userId = request.cookies.login;
+    // if (!userId || userId !== login) {
+    //   reply.code(401).send({ error: 'Unauthorized' });
+    //   return;
+    // }
+    try {
+      const readLinks = await linkRepository.readAll(login);
+      reply.code(200).send(readLinks);
+    } catch (error) {
+      reply.code(500).send({ error: 'Failed to retrieve links' });
+    }
+  });
+
+  fastify.get<{
+    Params: { id: number };
+  }>('/v1/link/:id', async function (request, reply) {
+    const id = request.params.id;
+    // const userId = request.cookies.login;
+    try {
+      const link = await linkRepository.read(id);
+      // if (!link || link.item.owner !== userId) {
       //   reply.code(401).send({ error: 'Unauthorized' });
       //   return;
       // }
-      try {
-        const readLinks = await linkRepository.readAll(login);
-        reply.code(200).send(readLinks);
-      } catch (error) {
-        reply.code(500).send({ error: 'Failed to retrieve links' });
-      }
-    },
-  });
-
-  fastify.route({
-    method: 'GET',
-    url: '/v1/link/:id',
-    handler: async function (
-      request: FastifyRequest<{
-        Params: { id: number };
-      }>,
-      reply
-    ) {
-      const id = request.params.id;
-      // const userId = request.cookies.login;
-      try {
-        const link = await linkRepository.read(id);
-        // if (!link || link.item.owner !== userId) {
-        //   reply.code(401).send({ error: 'Unauthorized' });
-        //   return;
-        // }
-        reply.code(200).send(link);
-      } catch (error) {
-        reply.code(500).send({ error: 'Failed to retrieve link' });
-      }
-    },
+      reply.code(200).send(link);
+    } catch (error) {
+      reply.code(500).send({ error: 'Failed to retrieve link' });
+    }
   });
 
   fastify.route({
