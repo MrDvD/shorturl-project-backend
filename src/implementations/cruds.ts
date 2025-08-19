@@ -118,12 +118,12 @@ export class LinkRepository
         type: raw.type,
         short_id: raw.short_id,
         has_expire: raw.expire !== null,
-        expire: new Date(raw.expire),
+        expire: raw.expire ? raw.expire : undefined,
         has_metadata: raw.name !== null && raw.description !== null,
-        name: raw.name,
-        description: raw.description,
-        create_date: new Date(raw.create_date),
-        update_date: raw.update_date ? new Date(raw.update_date) : undefined,
+        name: raw.name ? raw.name : undefined,
+        description: raw.description ? raw.description : undefined,
+        create_date: raw.create_date,
+        update_date: raw.update_date ? raw.update_date : undefined,
         owner: raw.owner,
       },
     };
@@ -135,7 +135,7 @@ export class LinkRepository
 
     if (item.has_expire) {
       columns.push('expire');
-      values.push(String(item.expire));
+      values.push(item.expire!);
     }
 
     if (item.has_metadata && item.name && item.description) {

@@ -25,13 +25,13 @@ export type Link = {
   type: LinkType;
   short_id?: string;
   has_expire: boolean;
-  expire?: Date;
+  expire?: string;
   has_metadata: boolean;
   name?: string;
   description?: string;
-  create_date: Date;
-  update_date?: Date;
-  owner: User['login'];
+  create_date: string;
+  update_date?: string;
+  owner: User['login'] | null;
 };
 
 export type RawLink = {
@@ -39,12 +39,12 @@ export type RawLink = {
   full_link: string;
   type: LinkType;
   short_id: string;
-  expire: string;
-  name: string;
-  description: string;
+  expire: string | null;
+  name: string | null;
+  description: string | null;
   create_date: string;
-  update_date: string;
-  owner: string;
+  update_date: string | null;
+  owner: string | null;
 }
 
 export type Response = {

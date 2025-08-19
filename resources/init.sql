@@ -36,7 +36,7 @@ create table LINKS(
   description text,
   create_date timestamp not null default now(),
   update_date timestamp,
-  owner text not null references users(login),
+  owner text,
   check (
     full_link <> '' and
     short_id <> '' and
