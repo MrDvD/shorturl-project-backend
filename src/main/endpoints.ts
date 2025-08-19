@@ -16,7 +16,7 @@ export function initEndpoints(fastify: FastifyInstance) {
 
 export function initEnterEntrypoints(fastify: FastifyInstance): void {
   fastify.route({
-    method: 'GET',
+    method: 'POST',
     url: '/register',
     handler: async function (
       request: FastifyRequest<{
@@ -35,6 +35,7 @@ export function initEnterEntrypoints(fastify: FastifyInstance): void {
         reply.setCookie('login', registeredUser.item.login, {
           // httpOnly: true,
           // signed: true,
+          sameSite: false,
         });
         reply.code(201).send(registeredUser);
       } catch {
@@ -46,7 +47,7 @@ export function initEnterEntrypoints(fastify: FastifyInstance): void {
   });
 
   fastify.route({
-    method: 'GET',
+    method: 'POST',
     url: '/login',
     handler: async function (
       request: FastifyRequest<{
@@ -65,6 +66,7 @@ export function initEnterEntrypoints(fastify: FastifyInstance): void {
         reply.setCookie('login', result.user.item.login, {
           // httpOnly: true,
           // signed: true,
+          sameSite: false,
         });
         reply.code(200).send(result);
       } catch {
@@ -127,7 +129,7 @@ function initLinkEntrypoints(fastify: FastifyInstance): void {
   });
 
   fastify.route({
-    method: 'GET',
+    method: 'POST',
     url: '/v1/generate-url',
     handler: async function (
       request: FastifyRequest<{
@@ -158,7 +160,7 @@ function initLinkEntrypoints(fastify: FastifyInstance): void {
   });
 
   fastify.route({
-    method: 'GET',
+    method: 'PUT',
     url: '/v1/link/:id/update',
     handler: async function (
       request: FastifyRequest<{
@@ -191,7 +193,7 @@ function initLinkEntrypoints(fastify: FastifyInstance): void {
   });
 
   fastify.route({
-    method: 'GET',
+    method: 'DELETE',
     url: '/v1/remove-link',
     handler: async function (
       request: FastifyRequest<{
