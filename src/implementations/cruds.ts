@@ -1,6 +1,7 @@
 import postgres from 'postgres';
 import { CheckableRepository, ReadableRepository } from '../abstracts/cruds';
 import { Link, RawLink, RawUser, Response, UID, User } from '../abstracts/types';
+import fastify from 'fastify';
 
 export class UserRepository
   implements CheckableRepository<User, Response, 'password'>
@@ -217,7 +218,7 @@ export class LinkRepository
   public update(item: UID<Link>): Promise<UID<Link>> {
     return this.sql.unsafe<RawLink[]>(`
       update LINKS
-        set update_date = now(), full_link = '${item.item.full_link}', type = '${item.item.type}', short_id = ${item.item.short_id!}${ item.item.has_expire ? ", expire = '" + item.item.expire + "', " : ""}${ item.item.has_metadata && item.item.name && item.item.description ? ", name = '" + item.item.name + "', description = '" + item.item.description + "'" : ""}
+        set update_date = now(), full_link = '${item.item.full_link}', type = '${item.item.type}', short_id = '${item.item.short_id!}'${ item.item.has_expire ? ", expire = '" + item.item.expire + "'" : ""}, name = ${item.item.has_metadata ? `'${item.item.name}'` : "null"}, description = ${item.item.has_metadata ? `'${item.item.description}'` : "null"}
         where link_id = ${item.id}
         returning *;
     `).then((linkList) => {
