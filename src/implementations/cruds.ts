@@ -115,9 +115,9 @@ export class LinkRepository
     const columns = ['full_link', 'type', 'short_id', 'owner'];
     const values = [item.full_link, item.type, item.short_id!, item.owner];
 
-    if (item.has_expire) {
+    if (item.has_expire || item.owner === null) {
       columns.push('expire');
-      values.push(item.expire!);
+      values.push(item.owner && item.expire ? item.expire : new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString());
     }
 
     if (item.has_metadata && item.name && item.description) {
