@@ -1,7 +1,6 @@
 import postgres from 'postgres';
 import { CheckableRepository, ReadableRepository } from '../abstracts/cruds';
 import { Link, RawLink, RawUser, Response, UID, User } from '../abstracts/types';
-import fastify from 'fastify';
 
 export class UserRepository
   implements CheckableRepository<User, Response, 'password'>
@@ -58,40 +57,22 @@ export class UserRepository
       });
   }
 
-  public update(item: UID<User>): Promise<UID<Omit<User, 'password'>>> {
-    if (item.item.email) {
-      return this.sql<RawUser[]>`
-        update USERS
-        set login = ${item.item.login}, email = ${item.item.email}, password = ${item.item.password}
-        where user_id = ${item.id}
-        returning *;
-      `
-        .then((userList) => {
-          if (userList[0]) {
-            return this.mapUser(userList[0]);
-          }
-          throw new Error('Ошибка на стороне базы данных.');
-        })
-        .catch(() => {
-          throw new Error('Ошибка на стороне базы данных.');
-        });
-    } else {
-      return this.sql<RawUser[]>`
-        update USERS
-        set login = ${item.item.login}, password = ${item.item.password}
-        where user_id = ${item.id}
-        returning *;
-      `
-        .then((userList) => {
-          if (userList[0]) {
-            return this.mapUser(userList[0]);
-          }
-          throw new Error('Ошибка на стороне базы данных.');
-        })
-        .catch(() => {
-          throw new Error('Ошибка на стороне базы данных.');
-        });
-    }
+  public update(item: UID<Omit<User, 'password'> & Partial<Pick<User, 'password'>>>): Promise<UID<Omit<User, 'password'>>> {
+    return this.sql.unsafe<RawUser[]>(`
+      update USERS
+      set login = '${item.item.login}'${ item.item.email ? ", email = '" + item.item.email + "'" : ""}${item.item.password ? ", password = '" + item.item.password + "'" : ""}
+      where user_id = ${item.id}
+      returning *;
+    `)
+      .then((userList) => {
+        if (userList[0]) {
+          return this.mapUser(userList[0]);
+        }
+        throw new Error('Ошибка на стороне базы данных.');
+      })
+      .catch(() => {
+        throw new Error('Ошибка на стороне базы данных.');
+      });
   }
 
   public async delete(id: number): Promise<void> {

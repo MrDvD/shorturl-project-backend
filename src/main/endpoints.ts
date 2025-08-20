@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import { connectPostgres } from './postgres';
-import { Link, User } from '../abstracts/types';
+import { Link, UID, User } from '../abstracts/types';
 import { LinkRepository, UserRepository } from '../implementations/cruds';
 import { hash } from '../implementations/generators';
 
@@ -11,6 +11,7 @@ const linkRepository = new LinkRepository(sql);
 export function initEndpoints(fastify: FastifyInstance) {
   initEnterEntrypoints(fastify);
   initLinkEntrypoints(fastify);
+  initUserEntrypoints(fastify);
   initRedirectEntrypoints(fastify);
 }
 
@@ -253,6 +254,59 @@ export function initRedirectEntrypoints(fastify: FastifyInstance): void {
         reply.redirect(link.item.full_link);
       } catch (error) {
         reply.code(500).send({ error: 'Failed to redirect' });
+      }
+    },
+  });
+}
+
+export function initUserEntrypoints(fastify: FastifyInstance): void {
+  fastify.route({
+    method: 'DELETE',
+    url: '/users/:userId',
+    handler: async function (
+      request: FastifyRequest<{
+        Params: { userId: number };
+      }>,
+      reply
+    ) {
+      const { userId } = request.params;
+      // const userId = request.cookies.login;
+      // if (!userId || userId !== login) {
+      //   reply.code(401).send({ error: 'Unauthorized' });
+      //   return;
+      // }
+      try {
+        await userRepository.delete(userId);
+        reply.code(204).send();
+      } catch (error) {
+        reply.code(500).send({ error: 'Failed to delete user' });
+      }
+    },
+  });
+
+  fastify.route({
+    method: 'PUT',
+    url: '/users/:userId',
+    handler: async function (
+      request: FastifyRequest<{
+        Params: { userId: number };
+        Body: UID<Omit<User, 'password'> & Partial<Pick<User, 'password'>>>;
+      }>,
+      reply
+    ) {
+      // const { userId } = request.params;
+      const item = request.body;
+      // const userId = request.cookies.login;
+      // if (!userId || userId !== login) {
+      //   reply.code(401).send({ error: 'Unauthorized' });
+      //   return;
+      // }
+      try {
+        const updatedUser = await userRepository.update(item);
+        fastify.log.info(`User ${updatedUser.item.login} updated successfully.`);
+        reply.code(200).send(updatedUser);
+      } catch (error) {
+        reply.code(500).send({ error: 'Failed to update user' });
       }
     },
   });
