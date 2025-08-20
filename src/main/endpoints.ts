@@ -41,7 +41,7 @@ export function initEnterEntrypoints(fastify: FastifyInstance): void {
         reply.code(201).send(registeredUser);
       } catch {
         reply.code(403).send({
-          error: "Couldn't register a new user with these credentials.",
+          message: "Couldn't register a new user with these credentials.",
         });
       }
     },
@@ -73,7 +73,7 @@ export function initEnterEntrypoints(fastify: FastifyInstance): void {
         reply.code(200).send(result);
       } catch {
         reply.code(403).send({
-          error: "Couldn't login with these credentials.",
+          message: "Couldn't login with these credentials.",
         });
       }
     },
@@ -95,7 +95,7 @@ function initLinkEntrypoints(fastify: FastifyInstance): void {
       const readLinks = await linkRepository.readAll(login);
       reply.code(200).send(readLinks);
     } catch (error) {
-      reply.code(500).send({ error: 'Failed to retrieve links' });
+      reply.code(500).send({ message: 'Failed to retrieve links' });
     }
   });
 
@@ -112,7 +112,7 @@ function initLinkEntrypoints(fastify: FastifyInstance): void {
       // }
       reply.code(200).send(link);
     } catch (error) {
-      reply.code(500).send({ error: 'Failed to retrieve link' });
+      reply.code(500).send({ message: 'Failed to retrieve link' });
     }
   });
 
@@ -134,15 +134,12 @@ function initLinkEntrypoints(fastify: FastifyInstance): void {
 
       try {
         if (link.type === 'short') {
-          fastify.log.info(`Generating short ID for URL: ${link.full_link}`);
           link.short_id = await hash(link.full_link);
-          fastify.log.info(`Generated short ID: ${link.short_id}`);
         }
         const createdLink = await linkRepository.create(link);
         reply.code(201).send(createdLink);
       } catch (error) {
-        fastify.log.error(`Error creating link: ${error}`);
-        reply.code(500).send({ error: 'Failed to create link' });
+        reply.code(500).send({ message: 'Failed to create link' });
       }
     },
   });
@@ -175,7 +172,7 @@ function initLinkEntrypoints(fastify: FastifyInstance): void {
         reply.code(200).send(updatedLink);
       } catch (error) {
         fastify.log.error(`Error updating link: ${error}`);
-        reply.code(500).send({ error: error ?? 'Failed to update link' });
+        reply.code(500).send({ message: error ?? 'Failed to update link' });
       }
     },
   });
@@ -201,7 +198,7 @@ function initLinkEntrypoints(fastify: FastifyInstance): void {
         await linkRepository.delete(id);
         reply.code(204).send();
       } catch (error) {
-        reply.code(500).send({ error: error ?? 'Failed to delete link' });
+        reply.code(500).send({ message: error ?? 'Failed to delete link' });
       }
     },
   });
@@ -221,14 +218,13 @@ export function initRedirectEntrypoints(fastify: FastifyInstance): void {
       const tempLink = { short_id: shortId, type: "short" } as Link;
       try {
         const link = await linkRepository.check(tempLink);
-        fastify.log.info(`im here`);
         // if (!link) {
         //   reply.code(404).send({ error: 'Link not found' });
         //   return;
         // }
         reply.redirect(link.item.full_link);
       } catch (error) {
-        reply.code(500).send({ error: 'Failed to redirect' });
+        reply.code(500).send({ message: 'Failed to redirect' });
       }
     },
   });
@@ -253,7 +249,7 @@ export function initRedirectEntrypoints(fastify: FastifyInstance): void {
         // }
         reply.redirect(link.item.full_link);
       } catch (error) {
-        reply.code(500).send({ error: 'Failed to redirect' });
+        reply.code(500).send({ message: 'Failed to redirect' });
       }
     },
   });
@@ -279,7 +275,7 @@ export function initUserEntrypoints(fastify: FastifyInstance): void {
         await userRepository.delete(userId);
         reply.code(204).send();
       } catch (error) {
-        reply.code(500).send({ error: 'Failed to delete user' });
+        reply.code(500).send({ message: 'Failed to delete user' });
       }
     },
   });
@@ -306,7 +302,7 @@ export function initUserEntrypoints(fastify: FastifyInstance): void {
         fastify.log.info(`User ${updatedUser.item.login} updated successfully.`);
         reply.code(200).send(updatedUser);
       } catch (error) {
-        reply.code(500).send({ error: 'Failed to update user' });
+        reply.code(500).send({ message: 'Failed to update user' });
       }
     },
   });

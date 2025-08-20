@@ -50,3 +50,7 @@ export type RawLink = {
 export type Response = {
   user: UID<Omit<User, 'password'>>;
 };
+
+export type ErrorResponse = {
+  message: string;
+};
